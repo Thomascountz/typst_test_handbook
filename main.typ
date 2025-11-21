@@ -5,10 +5,12 @@
 #show: doc => manual(
   title: "Dependency Tax",
   subtitle: "Gem Upgrade Protocols",
-  author: "Engineering Dept",
-  doc-id: "SPEC-2025-EU",
+  author: "Thomas Countz",
+  version: "0.0.1",
+  year: "2025",
   doc
 )
+
 
 = Operational Context
 
@@ -20,11 +22,35 @@ This tax is levied on all future development velocity. It is paid continuously i
 
 To distinguish this phenomenon from standard debt, we introduce the metric of *Technical Lag*.
 
-#note(title: "Definition", color: c-blue)[
+#note(title: "Definition", color: c-yellow)[
   [Technical Lag] refers to the temporal delta between the upstream release of a dependency and the currently deployed version within the production environment.
 ]
 
 The accumulation of lag is not linear; it is compounding. As the delta increases, the probability of a breaking change ($Delta P$) approaches 1.0.
+
+=== Uncertainty Principle
+
+The uncertainty principle in dependency management states that as the technical lag ($L$) increases, the predictability of successful upgrades decreases exponentially. This relationship can be modeled as:
+
+$
+P("success") = e^(-k * L)
+$
+
+Where $k$ is a constant representing the sensitivity of the dependency ecosystem.
+
+See #link("https://example.com")[Dependency Management under Uncertainty] for a formal treatment.
+
+=== Code Example in Ruby
+
+This is an example of a Gemfile that may incur technical lag if not regularly updated:
+
+```ruby
+# Gemfile
+gem 'rails', '~> 6.0.0'
+gem 'activesupport', '~> 6.0.0'
+```
+
+As new versions of `rails` and `activesupport` are released, the lag increases, leading to potential security vulnerabilities and incompatibilities.
 
 = Metrics & Measurement
 
