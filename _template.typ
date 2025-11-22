@@ -9,7 +9,7 @@
 #let c-yellow = rgb("#EFA00B")
 #let c-purple = rgb("#4C2C92")
 #let f-body = "Public Sans"
-#let f-mono = "DM Mono"
+#let f-mono = "Fira Code"
 
 // --- 2. TEMPLATE FUNCTION ---
 #let manual(
@@ -22,52 +22,56 @@
 ) = {
   // Page Configuration
   set page(
-    paper: "a4", // <--- SWITCHED TO A4
+    paper: "a4",
     fill: c-bg,
     margin: (x: 2.5cm, y: 2.5cm, top: 2.5cm, bottom: 2.5cm),
 
-    header: context {
-      if counter(page).get().first() > 1 {
-        let h = query(heading.where(level: 1).after(here()))
+    footer: context {
+      let pg_num = counter(page).get().first()
+      if pg_num > 2 {
+        set text(size: 8pt, weight: "regular", fill: c-ink)
+
+        line(length: 100%, stroke: 0.5pt + c-ink)
+        v(0.5em)
+
+        let chapter = query(heading.where(level: 1).after(here()))
           .filter(h => h.location().page() == here().page())
           .at(0, default: {
             query(heading.where(level: 1).before(here())).at(-1, default: none)
           })
 
-        set text(size: 8pt, weight: "regular", fill: c-ink)
-
-        grid(
-          columns: (1fr, 1fr),
-          align(left)[#upper[#title]],
-          if h != none { align(right)[#upper[#h.body]] }
-        )
+        if calc.even(pg_num) {
+          grid(
+            columns: (1fr, 1fr, 1fr),
+            "",
+            if chapter != none {
+              align(center)[#upper[#chapter.body]]
+            },
+            align(right)[#counter(page).display("01")],
+          )
+        } else {
+          grid(
+            columns: (1fr, 1fr, 1fr),
+            align(left)[#counter(page).display("01")],
+            if chapter != none {
+              align(center)[#upper[#chapter.body]]
+            },
+          )
+        }
       }
     },
-    header-ascent: 50%,
-
-    footer: context {
-      if counter(page).get().first() > 1 {
-        set text(size: 8pt, weight: "regular", fill: c-ink)
-        align(center)[#counter(page).display("01")]
-      }
-    },
-    footer-descent: 50%,
+    footer-descent: 30%,
   )
 
-  set text(font: f-body, fill: c-ink, size: 10pt)
+  set text(font: f-body, fill: c-ink, size: 12pt)
 
   show raw: set text(font: f-mono)
   show raw.where(block: true): block.with(
-    fill: c-paper,
-    inset: 2em,
+    inset: 1.5em,
     width: 100%,
+  
   )
-
-  set heading(numbering: "1.0")
-  show heading: it => [
-    #text(weight: "bold")[#upper(it)]
-  ]
-
+  show heading: set text(weight: "bold")
   show heading.where(level: 1): it => [
     #pagebreak(weak: true)
     #text(size: 20pt)[#upper(it)]
@@ -91,15 +95,18 @@
         #text(size: 12pt, weight: "regular")[#author]
 
         #v(5em)
-        #text(size: 10pt, font:f-mono)[© #year]
-        #text(size: 8pt, font:f-mono)[v.#version]
+        #text(size: 10pt, font: f-mono)[© #year]
+        #text(size: 8pt, font: f-mono)[v.#version]
 
       ]
     ]
   ]
   pagebreak()
 
-  // --- BODY RENDER ---
+  outline()
+
+  pagebreak()
+
   body
 }
 
